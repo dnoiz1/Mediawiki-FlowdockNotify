@@ -44,6 +44,7 @@ function flowdock_make_request($article, $user, $summary, $method)
         'event' => 'activity',
         'author' => array(
             'name' => $user->mRealName,
+            'email' => $user->mEmail,
             'avatar' => sprintf("https://www.gravatar.com/avatar/%s?s=50", md5(strtolower($user->mEmail))),
         ),
         'title' => sprintf("%s has been %s", $article->getTitle()->mTextform, $method),
