@@ -71,7 +71,7 @@ function flowdock_make_request($article, $user, $summary, $method)
 function flowdock_notify_revise($article, $user, $content, $summary,
     $isMinor, $isWatch, $section, $flags, $revision, $status, $baseRevId)
 {
-    $method = ($revision) ? 'created' : 'revised';
+    $method = $status->value['new'] ? 'created' : 'revised';
     flowdock_make_request($article, $user, $summary, $method);
     return true;
 }
