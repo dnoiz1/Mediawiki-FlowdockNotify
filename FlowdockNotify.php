@@ -35,7 +35,7 @@ curl -i -X POST -H "Content-Type: application/json" -d '{
 }' https://api.flowdock.com/messages
 */
 
-function flowdock_make_request($article, $user, $summary, $method)
+function flowdock_make_request($article, $user, $summary, $content, $method)
 {
     global $flowdock_token, $wgCanonicalServer;
 
@@ -47,11 +47,12 @@ function flowdock_make_request($article, $user, $summary, $method)
             'email' => $user->mEmail,
             'avatar' => sprintf("https://www.gravatar.com/avatar/%s?s=50", md5(strtolower($user->mEmail))),
         ),
+        'body' => $summary,
         'title' => sprintf("%s has been %s", $article->getTitle()->mTextform, $method),
         'external_thread_id' => (string)$article->getId(),
         'thread' => array(
             'title' => $article->getTitle()->mTextform,
-            'body' => $summary,
+            'body' => $content->getParserOutput($article->getTitle())->getText(),
             'external_url' => sprintf("%s/%s", $wgCanonicalServer, $article->getTitle()->mUrlform),
         )
     );
@@ -73,13 +74,13 @@ function flowdock_notify_revise($article, $user, $content, $summary,
     $isMinor, $isWatch, $section, $flags, $revision, $status, $baseRevId)
 {
     $method = $status->value['new'] ? 'created' : 'revised';
-    flowdock_make_request($article, $user, $summary, $method);
+    flowdock_make_request($article, $user, $summary, $content, $method);
     return true;
 }
 
 function flowdock_notify_delete($article, $user, $reason, $id, $content, $logEntry)
 {
-    flowdock_make_request($article, $user, $reason, 'deleted');
+    flowdock_make_request($article, $user, $reason, $content, 'deleted');
     return true;
 }
 
